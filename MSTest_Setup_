@@ -19,18 +19,17 @@ in Calendar create file
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- This code tells .NET that we are using the .NET Core 1.1. -->
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
 </Project>
 
-//This code tells .NET that we are using the .NET Core 1.1.
 /**********************************************************************/
 
-//- .csproj Files  //This file tells .NET which packages your project needs.
+- .csproj Files  //This file tells .NET which packages your project needs.
                  //These packages refer to existing blocks of code,
                  //which our program will reference as it runs.
-
 
 Because Calendar.Tests is its own project, it needs it's own .csproj file
 
@@ -46,23 +45,23 @@ create inside the Calendar.Tests folder
   </PropertyGroup>
   <ItemGroup>
 
-    //This sets up our testing environment so we can build test projects
+    <!-- This sets up our testing environment so we can build test projects -->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
 
-    //This runs out tests for us
+    <!-- This runs out tests for us -->
     <PackageReference Include="MSTest.TestAdapter" Version="1.2" />
 
-    //This allows us to create test classes and methods
-    //Also allow us to use other built-in-code to construct our tests.
+    <!-- This allows us to create test classes and methods
+    Also allow us to use other built-in-code to construct our tests. -->
     <PackageReference Include="MSTest.TestFramework" Version="1.2" />
 
   </ItemGroup>
 
 
-    // Within this <ItemGroup>, our test project references our main application
-    // project.
-    // Allows the tests to find and use the namespaces of the other project
-    // without interfering with it
+    <!-- Within this , our test project references our main application
+    project.
+    Allows the tests to find and use the namespaces of the other project
+    without interfering with it -->
   <ItemGroup>
     <ProjectReference Include="..\Calendar\Calendar.csproj" />
   </ItemGroup>
@@ -70,10 +69,12 @@ create inside the Calendar.Tests folder
 </Project>
 
  /**********************************************************************/
-
 Navigate into the Calendar.Tests folder and run:
-> dotnet restore Calendar.Tests
 
+> dotnet restore
+
+or just run this from the Calendar.Solution level
+> dotnet restore Calendar.Tests
  /**********************************************************************/
 
 Now...  set up our LeapYear class within the Calendar namespace
@@ -144,3 +145,189 @@ For reference, the structure of your project should look like this:
        ├───ModelTests
            ├───LeapYearTests.cs
        ├───Calendar.Tests.csproj
+
+/**********************************************************************/
+/**********************************************************************/
+Save and commit
+/**********************************************************************/
+/**********************************************************************/
+
+choose one behavior to build .  SPEC
+
+We write a spec that contains a description and an example of that behavior
+        Description/Behavior            Input   Output
+
+//
+Calendar.Tests/ModelTests/LeapYearTest.cs
+//
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Calendar;
+
+namespace Calendar.Tests
+{
+  [TestClass]
+  public class LeapYearTest
+  {
+    [TestMethod]
+    public void IsLeapYear_NumberDivisibleByFour_True()
+    {
+      //This creates and instance of our LeapYear class named testLeapYear
+      LeapYear testLeapYear = new LeapYear();
+
+
+      Assert.AreEqual(true, testLeapYear.IsLeapYear(2012));
+    }
+  }
+}
+
+/**********************************************************************/
+
+run> dotnet test
+
+//this should fail because out method is set to return false.  No logic.
+
+Calendar/Models/LeapYear.cs
+
+public bool IsLeapYear(int year)
+{
+  return false;
+}
+
+
+change logic to
+
+public bool IsLeapYear(int year)
+{
+  return year % 4 == 0;
+}
+
+
+run> dotnet test
+pass
+
+/**********************************************************************/
+
+now add another assertion to continue testing
+
+// this is expecting a false so we should still pass
+
+[TestMethod]
+public void IsLeapYear_NumberNotDivisibleByFour_False()
+{
+  LeapYear testLeapYear = new LeapYear();
+  Assert.AreEqual(false, testLeapYear.IsLeapYear(1999));
+}
+
+run> dotnet test
+pass
+
+/**********************************************************************/
+repeat with new test...  is divisible by 100
+
+Calendar.Tests/ModelTests/LeapYearTest.cs
+
+...
+[TestMethod]
+public void IsLeapYear_MultiplesOfOneHundred_False()
+{
+  LeapYear testLeapYear = new LeapYear();
+  Assert.AreEqual(false, testLeapYear.IsLeapYear(1900));
+}
+
+should return red/fail because the assertion will return true and we
+asserted false
+/**********************************************************************/
+
+now add logic to make it pass
+
+Calendar/Models/LeapYear.cs
+
+...
+public bool IsLeapYear(int year)
+{
+  if (year % 100 == 0)
+  {
+    return false;
+  }
+  else
+  {
+    return year % 4 == 0;
+  }
+}
+
+run> dotnet test
+pass
+
+/**********************************************************************/
+
+Repeat again
+one last scenario
+
+Calendar.Tests/ModelTests/LeapYearTest.cs
+
+...
+[TestMethod]
+public void IsLeapYear_MultiplesOfFourHundred_True()
+{
+  LeapYear testLeapYear = new LeapYear();
+  Assert.AreEqual(true, testLeapYear.IsLeapYear(2000));
+}
+...
+
+run> dotnet test
+fail
+
+/**********************************************************************/
+
+fix our code to make it pass
+
+Calendar/Models/LeapYear.cs
+
+public bool IsLeapYear(int year)
+{
+  if (year % 400 == 0)
+  {
+    return true;
+  }
+  else if (year % 100 == 0)
+  {
+    return false;
+  }
+  else
+  {
+    return year % 4 == 0;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************************************************************/
